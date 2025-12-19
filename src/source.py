@@ -115,25 +115,19 @@ if SHOW_PLOTS:
 
 def plot_log_transform(data):
     tmp_data = data.copy()
-
     tmp_data['distance_to_MRT_log'] = np.log1p(tmp_data['distance_to_MRT'])
-
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
     sns.histplot(tmp_data['distance_to_MRT'], kde=True, ax=axes[0], color='skyblue')
     axes[0].set_title('Origin Data')
-
     sns.histplot(tmp_data['distance_to_MRT_log'], kde=True, ax=axes[1], color='salmon')
     axes[1].set_title('After')
 
     plt.show()
+    
     tmp_data['house_price_log'] = np.log1p(tmp_data['house_price'])
-
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
     sns.histplot(tmp_data['house_price'], kde=True, ax=axes[0], color='skyblue')
     axes[0].set_title('Origin Data')
-
     sns.histplot(tmp_data['house_price_log'], kde=True, ax=axes[1], color='salmon')
     axes[1].set_title('After')
 
