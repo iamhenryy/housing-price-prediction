@@ -18,7 +18,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-data = pd.read_csv('real_estate.csv')
+data = pd.read_csv('../data/real_estate.csv')
 
 print("\n<Dataset's information>:")
 print(f"1. Size: {data.shape}")
@@ -114,19 +114,29 @@ if SHOW_PLOTS:
     view_outliers(data)
 
 def plot_log_transform(data):
-    tmp = data.copy()
+    tmp_data = data.copy()
 
-    tmp['distance_to_MRT_log'] = np.log1p(tmp['distance_to_MRT'])
-    tmp['house_price_log'] = np.log1p(tmp['house_price'])
+    tmp_data['distance_to_MRT_log'] = np.log1p(tmp_data['distance_to_MRT'])
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-    sns.histplot(tmp['distance_to_MRT'], ax=axes[0])
-    sns.histplot(tmp['distance_to_MRT_log'], ax=axes[1])
+
+    sns.histplot(tmp_data['distance_to_MRT'], kde=True, ax=axes[0], color='skyblue')
+    axes[0].set_title('Origin Data')
+
+    sns.histplot(tmp_data['distance_to_MRT_log'], kde=True, ax=axes[1], color='salmon')
+    axes[1].set_title('After')
+
     plt.show()
+    tmp_data['house_price_log'] = np.log1p(tmp_data['house_price'])
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-    sns.histplot(tmp['house_price'], ax=axes[0])
-    sns.histplot(tmp['house_price_log'], ax=axes[1])
+
+    sns.histplot(tmp_data['house_price'], kde=True, ax=axes[0], color='skyblue')
+    axes[0].set_title('Origin Data')
+
+    sns.histplot(tmp_data['house_price_log'], kde=True, ax=axes[1], color='salmon')
+    axes[1].set_title('After')
+
     plt.show()
 
 if SHOW_PLOTS:
