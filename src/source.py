@@ -118,7 +118,7 @@ def plot_log_transform(data):
     tmp_data['distance_to_MRT_log'] = np.log1p(tmp_data['distance_to_MRT'])
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     sns.histplot(tmp_data['distance_to_MRT'], kde=True, ax=axes[0], color='skyblue')
-    axes[0].set_title('Origin Data')
+    axes[0].set_title('Origina Data')
     sns.histplot(tmp_data['distance_to_MRT_log'], kde=True, ax=axes[1], color='salmon')
     axes[1].set_title('After')
 
