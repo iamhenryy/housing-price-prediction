@@ -1,0 +1,148 @@
+\section{Kiến thức nền tảng}
+\subsection{K-nearest Neighbour}
+
+\textbf{K-Nearest Neighbour (KNN)} là một trong những thuật toán supervised-learning đơn giản nhất. KNN được xếp vào loại \textit{lazy learning}. Khác với các thuật toán \textit{eager learning}, KNN không xây dựng mô hình hay rút trích quy luật từ dữ liệu ngay từ đầu, mà chỉ thực hiện quá trình suy luận khi có yêu cầu dự đoán.\cite{aha2013lazy}. KNN đều có thể được sử dụng cho cả hai bài toán Classification và Regression. Tuy nhiên đối vói bài toán dự đoán giá nhà chúng tôi chỉ bàn đến bài toán Regression.
+
+\vspace{5px}
+Cơ chế hoạt động của KNN là đầu ra của mô hình sẽ được tính toán bằng dựa vào K điểm dữ liệu gần nhất đối với dữ liệu đầu vào. Các bước để làm một bài toán Regression dùng KNN như sau:
+\begin{enumerate}
+    \item Tính khoảng cách từ điểm đầu vào tới K điểm gần nhất
+    \item Sắp xếp khoảng cách của các điểm này theo thứ tự tăng dần
+    \item Tìm label của điểm mới bằng cách lấy giá trị trung bình cộng của K điểm gần nhất
+    \item Tìm K sao cho mô hình có Root mean square error (RMSE) nhỏ nhất 
+\end{enumerate}
+Khoảng cách giữa các điểm được tính bằng khoảng cách Euclid với công thức như sau:
+\begin{equation*}
+    d(p,q) = \sqrt{(p_1-q_1)^2+(p_2-q_2)^2+...+(p_n-q_n)^2}
+\end{equation*}
+với $p$ và $q$ là các điểm trên không gian n-chiều
+
+\vspace{5px}
+Ta cũng có thể viết lại dưới dạng vector:
+\begin{equation*}
+     d(p,q) = \lVert{p - q}\rVert
+\end{equation*}
+
+\subsection{K-means Clustering}
+\textbf{K-means Clustering (K-means)} là thuật toán dùng để chia tập dữ liệu thành K tập sao cho mọi dữ liệu trong tập có tính chất gần giống nhau nhất có thể. Thuật toán K-means có thể  được thực hiện như sau bởi thuật toán Lloyd\cite{1056489} như sau:
+\begin{enumerate}
+    \item Chọn K điểm ngẫu nhiên để làm tâm của tập
+    \item Với mỗi điểm, ta tính bình phương khoảng cách Euclid đến K tâm và phân điểm đó vào tập có tâm gần nhất\[d^2(p, q)=(p_1-q_1)^2+(p_2-q_2)^2+...+(p_n-q_n)^2\]
+    \item Tìm tâm mới bằng cách tính trung bình cộng các điểm trong tập đã chia
+    \item Lặp lại bước 2 và 3 cho đến khi giá trị thay đổi của các tâm bé hơn $\epsilon$ cho trước hoặc sau $n$ lần lặp cho trước.
+\end{enumerate}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/sec2/fig1.png}
+    \caption{\centering{Dữ liệu được chia thành 3 tập nhờ thuật toán K-means}}
+    \label{fig:fig1}
+\end{figure}
+
+\subsection{Các phương pháp đánh giá sai số}
+\subsubsection{Mean absolute percentage error}
+\textbf{Mean absolute percentage error (MAPE)} là phần trăm chênh lêch giữa kết quả do mô hình dự đoán được và kết quả thật từ dữ liệu. MAPE được định nghĩa như sau:
+\begin{equation*}
+    \text{MAPE} = 100\dfrac{1}{n}\sum_{t=1}^{n}\left|\dfrac{A_t-F_t}{A_t} \right|
+\end{equation*}
+trong đó $A_t$ là giá trị thực tế và $F_t$ là giá trị dự đoán\cite{hastie2009elements}
+
+\vspace{5px}
+MAPE được dùng rất phổ biến trong các bài toán Regression bởi nó cho ta dễ hình dung về độ chính xác của mô hình hơn. Chỉ số MAPE nhỏ chứng tỏ độ chênh lệch nhỏ và mô hình chuẩn xác hơn. Tuy nhiên ta sẽ không tính được MAPE khi $A_t = 0$
+
+
+
+\subsubsection{Root mean squared error}
+\textbf{Root mean square error (RMSE)} cũng là một cách đo độ chính xác của mô hình dự đoán. Công thức tính RMSE như sau:
+\begin{equation*}
+    \text{RMSE} = \sqrt{\dfrac{1}{n}\sum_{i = 1}^{n}(X_i-x_i)^2}
+\end{equation*}
+trong đó $[X_1, X_2,...,X_n]$ là các giá trị được dự đoán và $[x_1,x_2,...,x_n]$ là các giá trị thực\cite{hastie2009elements}
+
+\vspace{5px}
+Ta có thể thấy RMSE cải thiện so với MAPE do có thể trả về kết quả khi $x_i = 0$. Cũng giống như MAPE, chỉ số RMSE càng nhỏ thì mô hình dự đoán càng chính xác. Tuy nhiên RMSE trừng phạt mạnh với sai số lớn hơn. Nhược điểm của RMSE là bị ảnh hưởng mạnh bởi các outlier.
+
+
+\subsubsection{Mean absolute error}
+\textbf{Mean absolute error (MAE)} là một cách khác để đo độ chênh lệch trung bình giữa giá trị dự đoán và giá trị thực tế. MAE có thể được tính như sau:
+\begin{equation*}
+    \text{MAE} = \dfrac{1}{n}\sum_{i = 1}^n\ \left|A_i-F_i\right|
+\end{equation*}
+với $A_i$ là giá trị thực tế và $F_i$ là giá trị dự đoán\cite{hastie2009elements}
+
+\vspace{5px}
+Khác với RMSE, MAE không trừng phạt lỗi sai quá nhiều. Do đó, MAE ít bị ảnh hưởng bởi outlier
+
+\subsubsection{Coefficient of determination}
+\textbf{Coefficient of determination ($\mathbf{\text{R}^2}$ score)} là tỷ lệ biến thiên của biến phụ thuộc có thể được giải thích (hoặc dự đoán) từ biến độc lập (hoặc các biến độc lập). $R^2$ score có thể được tính như sau\cite{hastie2009elements}\cite{steel1960principles}:
+
+\vspace{5px}
+Một dữ liệu có n giá trị $[y_1,y_2,...,y_n]$ và tương ứng với mỗi giá trị là giá trị dự đoán từ mô hình $[f_1, f_2,...,f_n]$ 
+
+\vspace{5px}
+Ta có giá trị trung bình của giá trị thực như sau
+\begin{equation*}
+    \Bar{y}=\dfrac{1}{n}\sum_{i = 1}^{n}y_i
+\end{equation*}
+
+\vspace{5px}
+Ta có tổng phần dư được tính như sau:
+\begin{equation*}
+    \text{SS}_{\text{res}} = \sum_i(y_i-f_i)^2
+\end{equation*}
+
+\vspace{5px}
+Ta có tổng biến thiên dữ liệu:
+\begin{equation*}
+    SS_{tot} = \sum_i(y_i-\Bar{y)^2}
+\end{equation*}
+
+\vspace{5px}
+Cuối cùng ta có:
+\begin{equation*}
+    R^2 = 1-\dfrac{SS_{res}}{SS_{tot}}
+\end{equation*}
+
+$R^2$ score dùng để cho ta thấy mô hình dự đoán tốt như thế nào dựa vào tổng biến thiên của dữ liệu. $R^2$ cho biết mô hình dự đoán tốt hơn bao nhiêu so với việc không sử dụng biến đầu vào.
+
+
+
+\subsubsection{Silhouette}
+\textbf{Silhouette} là giá trị để cho thấy sự tương đồng của một điểm dữ liệu khi so sánh giữa tập chứa nó và các tập khác\cite{ROUSSEEUW198753}. Giá trị silhouette nằm trong khoảng (-1,1). Nếu đa số các dữ liệu có chỉ số silhouette cao thì số lượng tập chia là phù hợp. Ngược lại, nếu chỉ số của toàn tập thấp thì có nghĩa là chỉ số K quá cao hoặc quá thấp. Giá trị silhouette được tính như sau:
+
+Với mọi điểm dữ liệu $i \in C_i$ ($C_i$ là cụm dữ liệu chứa $i$), ta có:
+\begin{equation*}
+    a(i) = \dfrac{1}{\lvert{C_i}\rvert - 1} \sum_{j\in C_i, j\neq i} d(i, j)
+\end{equation*}
+
+$|C_i|$ là số phần tử có trong cụm dữ liệu và $d(i,j)$ là khoảng cách Euclid giữa hai điểm dữ liệu
+
+\vspace{5px}
+Với mọi $i \in C_i$, ta có:
+\begin{equation*}
+    b(i) = \min_{j\neq i} \dfrac{1}{C_j} \sum_{j\in C_j} d(i,j)
+\end{equation*}
+
+Ở đây $a(i)$ tính tổng khoảng cách của điểm dữ liệu $i$ và các điểm dữ liệu chung cụm với nó. Với $b(i)$, nó là tổng khoảng cách nhỏ nhất của điểm dữ liệu $i$ với các điểm dữ liệu của từng cụm khác. Hai chỉ số trên càng nhỏ thì mức độ tương đồng của $i$ với cụm dữ liệu đó càng nhau.
+
+\vspace{5px}
+Khi đó diểm Silhouette được tính như sau:
+\begin{equation*}
+    s(i)=
+    \begin{cases}
+        1-\dfrac{a(i)}{b(i)} & \text{if } a(i) < b(i) \\
+        0 & \text{if } a(i) = b(i)\\
+        \dfrac{b(i)}{a(i)} - 1 & \text{if } a(i) > b(i)\\
+    \end{cases}
+\end{equation*}
+
+\subsubsection{Elbow method}
+\textbf{Elbow method} là một cách heuristic để tìm số cụm trong một tập dữ liệu\cite{Thorndike_1953}. Phương pháp làm như sau:
+\begin{enumerate}
+    \item Tính Inertia của dữ liệu:
+    \begin{equation*}
+        I = \sum_{i=1}^n\sum_{j \in C_j}d(j,A_{C_j})^2
+    \end{equation*}
+    với $C_j$ là cụm dữ liệu và $A_{C_j}$ là tâm của cụm
+    \item Tìm điểm mà tốc độ giạm của inertia giảm đột ngột và gọi điểm đó là điểm Elow
+\end{enumerate}
+Tuy nhiên phương pháp này gây tranh cãi vì định nghĩa của điểm Elbow tùy thuộc và người sử dụng.

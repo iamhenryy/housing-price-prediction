@@ -1,0 +1,256 @@
+\section{Đề xuất mô hình dự đoán khác}\label{sec4}
+
+\quad Qua phần trình bày trên đã trình bày về phương pháp dự đoán giá nhà đất mà chúng tôi đã thực hiện công việc này thông qua việc sử dụng mô hình K-nearest neighbor (KNN) và mô hình phân cụm K-means, bên cạnh đó chúng tôi có tìm hiểu thêm được nhiều mô hình phù hợp khác đối với bài toán dự đoán. Chúng tôi qua việc tìm hiểu các mô hình ngoài hai mô hình đã được ứng dụng chính trong bài làm, đã có đề xuất thêm mô hình dự đoán đối với bài toán dự đoán giá nhà trên là dùng mô hình \textbf{Linear Regression}. \\
+
+Trước khi đi vào việc ứng dụng mô hình vào bài toán dự đoán này, chúng tôi đề cập qua kiến thức về \textbf{Linear Regression} sau đây.
+
+\subsection{Mô hình Linear Regression}\label{subsec41}
+
+Phần giới thiệu mô hình này được trích lược từ~\cite{machinelearningcoban}.
+
+\subsubsection{Giới thiệu}\label{subsec411}
+\quad Hồi quy tuyến tính (Linear Regression) là thuật toán hồi quy mà đầu ra là một hàm số tuyến tính của đầu vào. Đây là thuật toán đơn giản nhất trong số thuật toán học có giám sát.
+
+\quad Trong phần lý thuyết này chúng tôi sẽ lấy minh hoạ một vài đặc trưng trên bài toán mà chúng tôi đang thực hiện. Ta có một căn nhà có khoảng cách đến ga tàu điện là $x_{1}~m^2$, có $x_2$ số cửa hàng tiện lợi gần đó và căn nhà có tuổi là $x_3$. Với một lượng dữ liệu về căn nhà với các đặc trưng đã nêu như trên thì ta có thể xây dựng được hàm dự đoán $y = f(\mathbf{x})$. Ta có được $\mathbf{x} = \left[x_1, x_2, x_3 \right]^{T}$ là một vector cột chứa chứa dữ liệu đầu vào \textit{input}, với $y$ là một đầu ra là một số thực dương. 
+
+Dễ thấy rằng giá nhà sẽ cao nếu các đặc trưng của ngôi nhà là tối ưu nhất, ví dụ như khoảng cách đến ga tàu điện là ngắn nhất, nhiều cửa hàng tiện lợi nhất, căn nhà còn mới,...v.v. Ta có thể mô hình hoá được đầu ra đơn giản như sau
+
+\begin{equation}\label{eq:linear}
+    y \approx \hat{y} = f(\mathbf{x}) = w_1 x_1 + w_2 x_2 + w_3 x_3 = \mathbf{x}^{T}\mathbf{w}
+\end{equation}
+
+
+trong đó $\mathbf{w} = \left[w_1, w_2, w_3 \right]^{T}$ là các vector trọng số cần tìm. Mối quan hệ của \eqref{eq:linear} là mối quan hệ tuyến tính.
+
+\subsubsection{Tổng quát}
+
+\quad Với mỗi điểm dữ liệu được mô tả với $d$ đặc trưng khác nhau, ta có thể mô tả dưới dạng tổng quát rằng điểm dữ liệu đó được đặc trưng bởi vector $d$ chiều nằm trong không gian $\mathbb{R}^{d}$ hay $x \in \mathbb{R}^{d}$
+
+\begin{equation}\label{eq:outpredict}
+    y \approx \hat{y} = f(\mathbf{x}) = w_1 x_1 + w_2 x_2 + w_3 x_3 = \mathbf{x}^{T}\mathbf{w}
+\end{equation}
+
+\subsubsection{Sai số dự đoán}
+
+Ta cần đánh giá phù hợp với bài toán yêu cầu sau khi hoàn thành việc xây dựng mô hình dự đoán \eqref{eq:outpredict}. Với các bài toán hồi quy, mong muốn sự sai khác $e$ giữa đầu ra thực tế $y$ và đầu ra dự đoán $\hat{y}$ là giá trị nhỏ nhất.
+
+\begin{equation}\label{eq:losspredict}
+    \dfrac{1}{2} e^2 = \dfrac{1}{2} \left( y - \hat{y} \right)^{2} = \dfrac{1}{2} \left( y - \mathbf{x}^{T}\mathbf{w} \right)^{2}
+\end{equation}
+
+Ta lấy $e^2$ vì $e = y - \hat{y}$ có thể là một số âm, ta cũng có thể sử dụng hàm trị tuyệt đối $|e| = |y - \hat{y}|$ để mô tả nhưng vì hàm trị tuyệt đối không khả vi tại $(0, 0)$ không thuận tiện cho việc tối ưu. Hệ số $\dfrac{1}{2}$ sẽ bị triệt tiêu khi lấy đạo hàm của $e$ theo tham số của mô hình $\mathbf{w}$.
+
+\subsubsection{Hàm mất mát}
+Với mọi cặp dữ liệu $\left(\mathbf{x}_i, y_i \right), ~i = 1, 2,...,N$, $N$ là số lượng dữ liệu trong tập huấn luyện, việc tìm mô hình tốt nhất đồng nghĩa với tìm 
+$\mathbf{w}$ sao cho hàm số dưới đây đạt giá trị là nhỏ nhất
+
+\begin{equation}\label{eq:lossfunc}
+    \mathcal{L}\left(\mathbf{w}\right) = \dfrac{1}{2N}\sum_{i = 1}^{N}\left(y_i - {\mathbf{x}}_i^{T} \mathbf{w}\right)^2
+\end{equation}
+
+
+Hàm số $\mathcal{L}\left(\mathbf{w}\right)$ là hàm mất mát của mô hình hồi quy tuyến tính với tham số $\theta = \mathbf{w}$. Ta mong muốn sự mất mát là nhỏ nhất, điều này có thể đạt được bằng cách tối thiểu hàm mất mát theo $\mathbf{w}$:
+
+\begin{equation}\label{eq:optimalpnt}
+    \mathbf{w}^* = \arg\min_{\mathbf{w}} \mathcal{L}(\mathbf{w}).
+\end{equation}
+
+$\mathbf{w}^*$ là nghiệm cần phải tìm của bài toán. Dấu $*$ có thể bỏ đi và nghiệm có thể viết lại thành $\mathbf{w} = \arg\min_{\mathbf{w}} \mathcal{L}(\mathbf{w}).$ \\
+
+
+Ta có thể viết gọn lại \eqref{eq:lossfunc} dưới dạng ma trận, vector, norm như sau:
+\begin{equation}
+\mathcal{L}\left(\mathbf{w}\right) = \dfrac{1}{2N}\sum_{i = 1}^{N}\left(y_i - {\mathbf{x}}_i^{T} \mathbf{w}\right)^2
+= \frac{1}{2N} \left\|
+\begin{bmatrix} 
+y_1 \\
+y_2 \\ 
+\vdots \\ 
+y_N  
+\end{bmatrix} 
+-
+\begin{bmatrix}
+\mathbf{x}_1^T \\ 
+\mathbf{x}_2^T \\ 
+\vdots \\ 
+\mathbf{x}_N^T
+\end{bmatrix} \mathbf{w} \right\|_2^2 
+= \frac{1}{2N} \| \\ \mathbf{y} - \mathbf{X}^T\mathbf{w}\|_2^2
+\end{equation}
+
+với $\mathbf{y} = \left[y_1, y_2,...,y_N \right]^T$, $\mathbf{X} = \left[\mathbf{w}_1, \mathbf{w}_2,...,\mathbf{w}_N \right]$. Như vậy $\mathcal{L}\left(\mathbf{w}\right)$ là một hàm số liên tục liên quan đến bình phương của $\ell_2$ norm.
+
+\subsubsection{Nghiệm của hồi quy tuyến tính}
+
+Nhận thấy rằng $\mathcal{L}\left(\mathbf{w}\right)$ luôn có gradient tại mọi $\mathbf{w}$. Giá trị tối ưu của $w$ có thể tìm được thông qua việc giải phương trình đạo hàm của $\mathcal{L}\left(\mathbf{w}\right)$ theo $\mathbf{w}$ bằng không. 
+\begin{equation}\label{eq:gradient}
+    \dfrac{\nabla \mathcal{L}\left(\mathbf{w}\right)}{\nabla \mathbf{w}} = \dfrac{1}{N}\mathbf{X}\left(\mathbf{W}^T\mathbf{w} - \mathbf{y}\right)
+\end{equation}
+
+Phương trình gradient bằng không:
+\begin{equation}\label{eq:gradsol}
+    \dfrac{\nabla \mathcal{L}\left(\mathbf{w}\right)}{\nabla \mathbf{w}} = 0 \Leftrightarrow \mathbf{X}\mathbf{X}^T\mathbf{w} = \mathbf{X}\mathbf{y}
+\end{equation}
+
+Nếu ma trận $\mathbf{X}\mathbf{X}^T$ khả nghịch thì phương trình \eqref{eq:gradsol} có nghiệm duy nhất $\mathbf{w} = \left(\mathbf{X}\mathbf{X}^T\right)^{-1}\mathbf{X}\mathbf{y}$.
+
+Ngược lại, nếu ma trận $\mathbf{X}\mathbf{X}^T$ không khả nghịch thì phương trình \eqref{eq:gradsol} vô nghiệm hoặc vô số nghiệm. Lúc này, có thể xác định được nghiệm đặc biệt của phương trình dựa vào \textit{giả nghịch đảo}. Người ta chứng minh với mọi ma trận $\mathbf{X}$, luôn tồn tại duy nhất giá trị $\mathbf{w}$ có $\ell_2$ norm nhỏ nhất giúp tối thiểu $\left\| \mathbf{X}^T\mathbf{w} - \mathbf{y}\right\|_F^2$. Cụ thể, $\left(\mathbf{X}\mathbf{X}^T\right)^{\dagger}\mathbf{X}\mathbf{y}$ trong đó $\left(\mathbf{X}\mathbf{X}^T\right)^{\dagger}$ là giả nghịch đảo của $\left(\mathbf{X}\mathbf{X}^T\right)$. Giả nghịch đảo của một ma trận luôn tồn tại. Đối với ma trận vuông và khả nghịch, giả nghịch đảo là nghịch đảo của ma trận đó. Tổng quát, nghiệm tối ưu của bài toán tối ưu \eqref{eq:optimalpnt} là
+
+\begin{equation}\label{eq:solution}
+    \mathbf{w} = \left(\mathbf{X}\mathbf{X}^T\right)^{\dagger}\mathbf{X}\mathbf{y}
+\end{equation}
+
+\subsubsection{Hệ số điều chỉnh}
+Hàm dự đoán đầu ra của hồi quy tuyến tính thường có thêm một \textit{hệ số điều chỉnh} (bias) $b$:
+
+\begin{equation}\label{eq:bias}
+    f(\mathbf{x}) = \mathbf{x}^T\mathbf{w} + b
+\end{equation}
+
+Nếu $b = 0$, đường thẳng/mặt phẳng $\mathbf{y} = \mathbf{x}^T\mathbf{w} + b$ luôn đi qua gốc toạ độ. Việc thêm hệ số $b$ khiến mô hình linh hoạt hơn. Hệ số điều chỉnh này cũng là một tham số mô hình.
+
+Nếu như xem mỗi điểm dữ liệu có thêm một đặc trưng $x_0 = 1$, ta sẽ có
+
+\begin{equation}
+    y = \mathbf{x}^T\mathbf{w} + b = w_1 x_1 + w_2 x_2 + ... + w_d x_d + bx_0 = \bar{\mathbf{x}}^T\bar{\mathbf{w}} 
+\end{equation}
+
+trong đó $\bar{\mathbf{x}} = \left[x_0, x_1, x_2,...,x_N \right]^T$ và $\bar{\mathbf{w}} = \left[b, w_1, w_2,...,w_N \right]$. Nếu đặt $\bar{\mathbf{X}} = \left[\bar{\mathbf{x}}_1, \bar{\mathbf{x}}_2,..., \bar{\mathbf{x}}_N \right]$, ta có nghiệm của bài toán tối thiểu hàm mất mát
+
+\begin{equation}
+    \bar{\mathbf{w}} = \arg\min_{\mathbf{w}}\frac{1}{2N} \|\mathbf{y} - \bar{\mathbf{X}}^T\bar{\mathbf{w}}\|_2^2 = \left(\bar{\mathbf{X}}\bar{\mathbf{X}}^T\right)^{\dagger}\bar{\mathbf{X}}\mathbf{y}
+\end{equation}
+
+Kỹ thuật thêm một đặc trưng $x_0 = 1$ vào vector đặc trưng và ghép hệ số điều chỉnh $b$ vào vector trọng số $\mathbf{w}$ như trên còn gọi là \textit{thủ thuật gộp hệ điều chỉnh} (bias trick).
+
+\subsection{Thử nghiệm đối với bài toán}
+
+Trong phần này, chúng tôi sẽ không đi sâu vào việc cài đặt thuật toán Linear Regression, chúng tôi sử dụng thư viện \texttt{scikit-learn} để thuận tiện hơn cho việc thực hiện bài toán. Chúng tôi sẽ tiếp tục sử dụng lại các tập dữ liệu đã được xử lý ở những phần trước đó để áp dụng cho mô hình này.
+
+\begin{lstlisting}[language=Python]
+from sklearn.linear_model import LinearRegression
+\end{lstlisting}
+
+Tiếp đến, chúng tôi tiến hành cài đặt ngắn gọn thuật toán và thử dự đoán trên tập \texttt{X\_test}
+
+\begin{lstlisting}[language=Python]
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_test_pred_log = model.predict(X_test)
+y_test_pred = np.expm1(y_test_pred_log)
+y_test_true = y_test_real 
+\end{lstlisting}
+
+Để có thể đánh giá được kết quả, chúng tôi thực hiện việc tính toán với tập \texttt{y\_test} ban đầu của tệp dữ liệu.
+
+\newpage
+
+\begin{lstlisting}[language=Python]
+test_metrics = regression_metrics(y_test_true, y_test_pred)
+
+print(test_metrics)
+'''
+Output:
+{'R2': np.float64(0.7378927719768755), 'MAE': np.float64(4.556856531247161), 
+'RMSE': np.float64(6.322832202091564), 'MAPE': np.float64(0.14721592387175336)}
+'''
+\end{lstlisting}
+
+Trực quan hơn, chúng tôi có cài đặt hàm để biểu diễn xem độ chính xác của việc áp dụng thuật toán hồi quy tuyến tính
+
+\begin{lstlisting}[language=Python]
+def plot_refined_results(y_true, y_pred, ax, title, color):
+    ax.scatter(y_true, y_pred, color=color, alpha=0.5, label='Actual Predicted Points')
+    
+    limits = [y_true.min(), y_true.max()]
+    ax.plot(limits, limits, color='red', linestyle='--', linewidth=2, label='Ideal Line (y=x)')
+    
+    z = np.polyfit(y_true, y_pred, 1)
+    p = np.poly1d(z)
+    
+    ax.plot(limits, p(limits), color='darkgreen', linestyle='-', linewidth=3, 
+            label=f'Model Trend (Weight-based)')
+    
+    ax.set_title(title, fontsize=16)
+    ax.set_xlabel('Real Value', fontsize=12)
+    ax.set_ylabel('Predicted Value', fontsize=12)
+    ax.legend(loc='upper left')
+    ax.grid(True, linestyle=':', alpha=0.6)
+\end{lstlisting}
+
+Áp dụng hàm bên trên vào kết quả mà ta đã nhận được bằng cách sử dụng code như sau
+\begin{lstlisting}[language=Python]
+fig, ax = plt.subplots(1, 1, figsize=(15, 8))
+
+plot_refined_results(y_test_true, y_test_pred, ax, 'Testing Set: Analysis of Model Weights', 'blue')
+
+plt.tight_layout()
+plt.show()
+\end{lstlisting}
+
+Sau đó, ta nhận được một hình như bên dưới đây:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/sec4/lr_res.png}
+    \caption{\centering{Kết quả mô hình \textit{hồi quy tuyến tính} sau dự đoán}}
+    \label{fig:lr_res}
+\end{figure}
+
+\subsection{Đánh giá kết quả}
+\subsubsection{Phân tích định lượng (Regression Metrics)}
+Qua kết quả \textit{output} của hàm \texttt{regression\_metrics()} ở bên trên, ta rút ra được một vài đánh giá như sau:
+\begin{itemize}
+    \item $R^2 \approx 0.738$: Con số này cho thấy mô hình dự đoán được khoảng $74 \%$ sự biến thiên của dữ liệu. So với mặt bằng chung của các mô hình tính toán tuyến tính cơ bản thì kết quả này ở mức độ \textbf{khá tốt}.
+    
+    \item $MAE \approx 4.56$: Điều này thể hiện được việc dự đoán có sai lệch trung bình so với giá trị thật khoảng $4.56$ \textbf{đơn vị}.
+    
+    \item $RMSE \approx 6.32$: Dễ thấy được, $RMSE$ cao hơn $MAE$ một mức đáng kể, cho thấy rằng tệp dữ liệu chưa đủ tổt hoặc các điểm đang bị dự đoán chênh lệnh lớn dẫn đến việc kéo sai số bình phương cao hơn; cho thấy phần nào độ nhiễu của mô hình hồi quy tuyến tính.
+    
+    \item $MAPE \approx 0.147$: Sai số trung bình rơi vào khoảng $15\%$, chứng tỏ mức độ tin cậy của mô hình vẫn còn có thể chấp nhận được.
+\end{itemize}
+
+\subsubsection{Phân tích định tính qua biểu đồ}
+Quan sát đường \textbf{Model Trend} so với đường \textbf{Ideal}
+\begin{itemize}
+    \item \textbf{Hiện tượng giao thoa:} Đường xu hướng của mô hình cắt đường lý tưởng tại khoảng giá trị thực tế từ \textbf{30 đến 40}. Tại dải này, mô hình dự đoán chính xác nhất.
+    
+    \item \textbf{Vùng giá trị thấp $\left(< 30\right)$):} Đường xanh nằm trên đường đỏ. Mô hình đang có xu hướng Over-predicting (dự đoán cao hơn thực tế) ở các giá trị nhỏ.
+    
+    \item \textbf{Vùng giá trị thấp $\left(> 45\right)$}: Đường xanh nằm dưới đường đỏ và khoảng cách ngày càng xa. Mô hình đang bị \textbf{Under-predicting} (dự đoán thấp hơn thực tế) ở các giá trị lớn. Đây chính là lý do khiến $R^2$ chưa thể đạt mức tốt nhất trong mô hình.
+    
+    \item \textbf{Độ phân tán (Variance):} Các điểm dữ liệu xòe rộng ra ở cuối biểu đồ (hình cái phễu), cho thấy mô hình mất dần sự ổn định khi giá trị thực tế tăng cao.
+\end{itemize}
+
+\subsubsection{Đánh giá với các mô hình trước}
+\quad Tiến hành so sánh kết quả của \texttt{regression\_metrics()} với các mô hình chúng tôi đã làm trong bài trên, thu được một bảng so sánh như sau:
+
+\begin{table}[h]
+\caption{\centering{Bảng đánh giá hiệu quả các mô hình}}
+\label{tab:model_evaluation_grouped}
+
+\begin{tabular*}{\textwidth}{@{\extracolsep\fill}lcccc}
+\toprule
+& \multicolumn{3}{c}{\textbf{Sai số\footnotemark[1]}} & \textbf{Độ phù hợp\footnotemark[2]} \\
+\cmidrule{2-4}\cmidrule{5-5}
+\textbf{Mô hình} & RMSE & MAE & MAPE (\%) & $R^2$ \\
+\midrule
+KNN Regressor     & 5.6574 & 4.2213 & \textbf{0.1328} & 0.7902 \\
+KMeans + KNN      & \textbf{5.5819} & \textbf{4.2193} & 0.1358 & \textbf{0.7957} \\
+Linear Regression & 6.3228 & 4.5568 & 0.1472 & 0.7378 \\
+\bottomrule
+\end{tabular*}
+\footnotetext{Note: Bảng đánh giá dựa trên việc kiểm thử trong tập dữ liệu của bài toán.}
+\footnotetext[1]{Các chỉ số sai số như RMSE, MAE, MAPE càng nhỏ thì độ hiệu quả của mô hình càng tốt.}
+\footnotetext[2]{Đối với chỉ số $R^2$, giá trị càng gần đến 1 thì càng hiệu quả.}
+\end{table}
+
+Có thể thấy được trên tập dữ liệu của đề việc ứng dụng mô hình \textbf{KMeans + KNN} sẽ cho ra một kết quả tốt hơn so với 2 mô hình còn lại. Trên tập dữ liệu của bài toán, việc ứng dụng mô hình \textbf{hồi quy tuyến tính} không cho ra một kết quả hiệu quả, nguyên nhân là do các điểm dữ liệu không nằm ở vị trí được xem là tối ưu đối với mô hình tuyến tính này, dẫn đến việc nhiễu làm mô hình bị Underfitting và Overfitting ở các giá trị cực biên. 
+
+
+\subsection{Hạn chế}
+\quad Một trong những hạn chế của Linear Regression là mô hình rất dễ nhạy cảm với nhiễu. Đồng thời hạn chế khác của hồi quy tuyến tính là việc nó không biểu diễn được các mô hình phức tạp.
+
+Mô hình trong bài toán hiện tại đang bị Underfitting hoặc Overfitting ở các giá trị cực biên (quá cao hoặc quá thấp) do bản chất của đường thẳng không thể uốn lượn theo sự thay đổi phức tạp của dữ liệu.
+
+

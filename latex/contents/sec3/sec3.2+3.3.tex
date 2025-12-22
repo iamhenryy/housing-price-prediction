@@ -1,0 +1,280 @@
+\subsection{Thực nghiệm}
+Phần này trình bày chi tiết quy trình xây dựng mô hình, bắt đầu từ việc phân tích đặc điểm tập dữ liệu, thực hiện các bước tiền xử lý cần thiết để đảm bảo tính nhất quán, và cuối cùng là thiết lập các tham số cho mô hình dự đoán.
+
+\subsubsection{Phân tích dữ liệu và tiền xử lý}
+Nghiên cứu sử dụng tập dữ liệu bao gồm 414 mẫu quan sát được trích xuất từ các giao dịch bất động sản thực tế. Mỗi mẫu dữ liệu ban đầu bao gồm một thuộc tính định danh (No) và 7 đặc trưng, trong đó có 6 đặc trưng đầu vào và 1 biến mục tiêu (giá nhà). Chi tiết các biến được trình bày trong Bảng \ref{tab:feature_desc}.
+
+\begin{table}[hbt!]
+    \caption{\centering Mô tả các đặc trưng trong tập dữ liệu}
+    \label{tab:feature_desc}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}c l p{0.35\textwidth} l}
+    \toprule
+    \textbf{Ký hiệu} & \textbf{Tên đặc trưng} & \textbf{Ý nghĩa} & \textbf{Kiểu dữ liệu} \\ 
+    \midrule
+    X1 & transaction\_date & Ngày giao dịch & Float \\
+    X2 & house\_age & Tuổi đời của căn nhà (năm) & Float \\
+    X3 & distance\_to\_MRT & Khoảng cách tới trạm MRT gần nhất (m) & Float \\
+    X4 & convenience\_stores & Số lượng cửa hàng tiện ích xung quanh & Integer \\
+    X5 & latitude & Vĩ độ địa lý & Float \\
+    X6 & longitude & Kinh độ địa lý & Float \\
+    Y & house\_price & Giá trị căn nhà trên một đơn vị diện tích & Float \\ 
+    \bottomrule
+    \end{tabular*}
+\end{table}
+\FloatBarrier
+
+Để có cái nhìn sâu sắc về cấu trúc dữ liệu và mối quan hệ giữa các đặc trưng, kỹ thuật "Phân tích dữ liệu khám phá" (Exploratory Data Analysis - EDA) được áp dụng thông qua các phương pháp trực quan hóa sau:
+
+\begin{itemize}
+    \item \textbf{Biểu đồ phân phối (Histogram):} Quan sát tần suất xuất hiện của các giá trị trong biến mục tiêu nhằm nhận diện dạng phân phối (chuẩn hay lệch) và phát hiện các giá trị ngoại lai (outliers).
+    \item \textbf{Biểu đồ tán xạ (Scatter Plot):} Biểu diễn mối tương quan giữa từng đặc trưng đầu vào (như khoảng cách đến MRT, tuổi đời căn nhà) với biến mục tiêu, qua đó nhận định sơ bộ về xu hướng tác động và độ mạnh yếu của mối quan hệ.
+    \item \textbf{Bản đồ nhiệt địa lý (Geographic Heatmap):} Tận dụng hai đặc trưng Vĩ độ và Kinh độ để mô phỏng sự phân bố không gian của giá nhà, giúp phát hiện các cụm khu vực có giá trị bất động sản cao/thấp đặc thù.
+    \item \textbf{Ma trận tương quan (Correlation Matrix):} Sử dụng hệ số tương quan Pearson để định lượng mức độ phụ thuộc tuyến tính giữa các cặp đặc trưng, hỗ trợ việc lựa chọn đặc trưng quan trọng và loại bỏ hiện tượng đa cộng tuyến.
+\end{itemize}
+
+Dưới đây là một số đồ thị được chúng tôi vẽ ra trong quá trình khảo sát tính chất của tập dữ liệu:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/sec3/eda_overview.png}
+    \caption{\centering Biểu đồ phân tích dữ liệu khám phá (EDA)}
+    \label{fig:eda_overview}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figures/sec3/correlation_matrix.png}
+    \caption{\centering Ma trận tương quan (Correlation Matrix)}
+    \label{fig:correlation_matrix}
+\end{figure}
+
+Dựa trên các phân tích trực quan, một số nhận định quan trọng được rút ra như sau:
+\begin{itemize}
+    \item Thuộc tính số thứ tự (No) và ngày giao dịch (transaction\_date) có hệ số tương quan Pearson gần bằng 0 đối với biến mục tiêu, cho thấy chúng không mang nhiều ý nghĩa dự báo.
+    \item Biểu đồ phân phối của biến mục tiêu cho thấy hiện tượng lệch phải (right-skewed) với sự xuất hiện của các điểm dữ liệu cực cao.
+    \item Đặc trưng \textit{distance\_to\_MRT} có tương quan nghịch mạnh nhất (-0.67) với giá nhà theo quy luật phi tuyến tính (giá giảm nhanh ở khoảng cách gần và bão hòa ở khoảng cách xa). Ngược lại, \textit{convenience\_stores} thể hiện tương quan thuận khá mạnh (0.57).
+    \item Đặc trưng vị trí địa lý (Kinh độ, Vĩ độ) cho thấy sự phân cụm rõ rệt của các khu vực giá cao, gợi ý vai trò quan trọng của yếu tố không gian.
+\end{itemize}
+
+Từ những nhận định trên, quy trình tiền xử lý được thực hiện bao gồm các bước:
+\begin{itemize}
+    \item \textbf{Lựa chọn đặc trưng:} Loại bỏ thuộc tính số thứ tự (No) và đặc trưng ngày giao dịch (transaction\_date) do không đóng góp vào giá nhà.
+    \item \textbf{Biến đổi dữ liệu:} Áp dụng hàm $\log(1+x)$ cho đặc trưng khoảng cách đến trạm MRT gần nhất (distance\_to\_MRT) để tuyến tính hóa biểu đồ tán xạ, cũng như áp dụng hàm $\log(1+x)$ cho biến mục tiêu (giá nhà) để đưa phân phối về dạng gần chuẩn. Điều này giúp ổn định phương sai, thu hẹp khoảng cách giữa các giá trị cực đại, hỗ trợ các thuật toán hoạt động hiệu quả hơn.
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\textwidth]{figures/sec3/log_mrt_distribution.png}
+        \caption{\centering Phân phối khoảng cách đến MRT trước và sau khi biến đổi Log}
+        \label{fig:log_mrt}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\textwidth]{figures/sec3/log_price_distribution.png}
+        \caption{\centering Phân phối giá nhà trước và sau khi biến đổi Log}
+        \label{fig:log_price}
+    \end{figure}
+    
+    \item \textbf{Xử lý ngoại lai:} Loại bỏ các điểm dữ liệu bất thường sử dụng phương pháp IQR (Interquartile Range).
+    \item \textbf{Phân chia dữ liệu:} Tập dữ liệu được chia ngẫu nhiên theo tỷ lệ 80\% cho huấn luyện (training set) và 20\% cho kiểm tra (test set). Việc chia tập diễn ra ngẫu nhiên để đảm bảo phân bố dữ liệu đồng đều.
+    \item \textbf{Chuẩn hóa:} Sử dụng phương pháp Min-Max Scaling để đưa các đặc trưng về cùng khoảng giá trị $[0, 1]$, triệt tiêu sự chênh lệch về đơn vị đo lường. Các tham số chuẩn hóa được tính toán trên tập huấn luyện và áp dụng cho tập kiểm tra.
+\end{itemize}
+
+\begin{table}[hbt!]
+    \caption{\centering Tóm tắt các thông số sau tiền xử lý}
+    \label{tab:preprocessing_summary}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}p{0.6\textwidth} c}
+    \toprule
+    \textbf{Thông số} & \textbf{Giá trị} \\ 
+    \midrule
+    Tổng số mẫu sau khi lọc nhiễu & 409 \\
+    Số đặc trưng đầu vào & 5 \\
+    Tỷ lệ chia Tập huấn luyện/Kiểm tra & 80/20 \\
+    Phương pháp chuẩn hóa & Min-Max Scaling \\ 
+    \bottomrule
+    \end{tabular*}
+\end{table}
+\FloatBarrier
+
+\subsubsection{Xây dựng mô hình dự đoán}
+Nghiên cứu triển khai thực nghiệm trên hai phương pháp tiếp cận chính dựa trên thuật toán láng giềng gần nhất. Chi tiết mã nguồn thực hiện được cung cấp trong các tệp \texttt{source.ipynb} và \texttt{source.py} đính kèm.
+
+\textbf{Phương pháp A: KNN Regressor (K-Nearest Neighbors)}
+
+Mô hình hồi quy KNN được xây dựng thông qua lớp \texttt{KNN\_regressor}. Dưới đây là đoạn mã mô tả quá trình dự đoán dựa trên $K$ láng giềng gần nhất sử dụng khoảng cách Euclid:
+
+\begin{lstlisting}[language=Python, caption={\centering Đoạn mã dự đoán của lớp KNN Regressor}, label={lst:knn_code}, basicstyle=\footnotesize\ttfamily, breaklines=true, frame=single]
+def predict(self, X):
+    X = np.array(X)
+    predictions = []
+    for x in X:
+        distances = euclidean_distance(self.X, x)
+        k_idx = np.argsort(distances)[:min(self.k, len(self.X))]
+        predictions.append(np.mean(self.y[k_idx]))
+    return np.array(predictions)
+\end{lstlisting}
+
+Yếu tố cốt lõi quyết định hiệu suất của phương pháp này là việc xác định tham số $K$ (số lượng láng giềng) tối ưu. Quy trình tìm kiếm tham số (grid search) được thực hiện với $K$ chạy từ 1 đến 50 trên tập xác thực (validation set - được tách ra từ 20\% tập huấn luyện).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/sec3/r2_k_value.png}
+    \caption{\centering Biểu đồ thể hiện sự thay đổi của $R^2$ theo giá trị K}
+    \label{fig:r2_k_value}
+\end{figure}
+
+Dựa vào biểu đồ ở Hình \ref{fig:r2_k_value}, giá trị \textbf{K = 6} được lựa chọn cho mô hình cuối cùng do đạt hiệu suất tối ưu trên tập xác thực.
+
+\textbf{Phương pháp B: Mô hình lai K-Means + KNN}
+
+Đây là hướng tiếp cận nâng cao nhằm khai thác cấu trúc cục bộ của dữ liệu theo chiến lược "chia để trị". Quy trình bao gồm hai giai đoạn:
+
+\begin{itemize}
+\item \textbf{Giai đoạn 1: Phân cụm dữ liệu.} Thuật toán K-Means được sử dụng để nhóm các mẫu dữ liệu có đặc tính tương đồng (vị trí, tiện ích) vào các cụm riêng biệt. Thuật toán hoạt động bằng cách khởi tạo ngẫu nhiên các tâm cụm và lặp lại quá trình gán nhãn - cập nhật tâm:
+
+\begin{lstlisting}[language=Python, caption={\centering Cài đặt vòng lặp huấn luyện K-Means}, label={lst:kmeans_code}, basicstyle=\footnotesize\ttfamily, breaklines=true, frame=single]
+def fit_loop(self, minval=1e-6, max_iter=300):
+    self.choose_random()
+    for _ in range(max_iter):
+        old_centers = self.centers.copy()
+        self.update_centers()
+        shift = euclidean_distance(
+            old_centers.flatten()[None, :],
+            self.centers.flatten()
+        )[0]
+        if shift < minval:
+            break
+\end{lstlisting}
+
+\newpage
+
+Số lượng cụm tối ưu ($K_{cluster}$) được xác định dựa trên kết quả tính toán thực nghiệm của chỉ số quán tính (Inertia) và chỉ số dáng điệu (Silhouette Score).
+
+Giá trị Inertia được tính toán trực tiếp thông qua phương thức nội bộ trong lớp K-Means:
+
+\begin{lstlisting}[language=Python, caption={\centering Phương thức tính Inertia trong lớp K-Means}, label={lst:inertia_code}, basicstyle=\footnotesize\ttfamily, breaklines=true, frame=single]
+def calculate_inertia(self):
+    inertia = 0.0
+    for i, x in enumerate(self.X):
+        c = self.labels[i]
+        inertia += np.sum((x - self.centers[c]) ** 2)
+    return inertia
+\end{lstlisting}
+
+Đồng thời, chỉ số Silhouette được tính toán trên toàn bộ tập dữ liệu để đánh giá chất lượng phân tách của các cụm:
+
+\begin{lstlisting}[language=Python, caption={\centering Hàm tính chỉ số Silhouette}, label={lst:sil_code}, basicstyle=\footnotesize\ttfamily, breaklines=true, frame=single]
+def silhouette_score(X, labels, metric='euclidean'):
+    max_ab = np.maximum(A, B)
+    s_scores = np.zeros(n_samples)
+    valid_mask = max_ab > 0
+    s_scores[valid_mask] = (B[valid_mask] - A[valid_mask]) / max_ab[valid_mask]
+    return np.mean(s_scores)
+\end{lstlisting}
+
+Kết quả thực nghiệm với $K$ chạy từ 2 đến 10 được trực quan hóa tại Hình \ref{fig:silhouette_score}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/sec3/silhouette_score.png}
+    \caption{\centering Biểu đồ quán tính (Inertia) và chỉ số Silhouette theo số lượng cụm K}
+    \label{fig:silhouette_score}
+\end{figure}
+
+Dựa trên biểu đồ, các phân tích sau được đưa ra:
+\begin{itemize}
+    \item \textbf{Phương pháp Elbow (Biểu đồ trái):} Một sự sụt giảm mạnh về giá trị Inertia được ghi nhận trong khoảng $K$ từ 2 đến 3. Tại $K=3$, độ dốc của đường cong bắt đầu giảm đáng kể, hình thành điểm uốn ("khuỷu tay"), báo hiệu sự bão hòa về độ nén của cụm.
+    \item \textbf{Chỉ số Silhouette (Biểu đồ phải):} Giá trị Silhouette đạt cực đại (xấp xỉ 0.36) tại $K=3$. Các giá trị $K$ khác đều cho kết quả thấp hơn, cho thấy tại $K=3$, cấu trúc phân cụm đạt được sự tách biệt rõ ràng nhất.
+\end{itemize}
+
+Từ sự đồng thuận giữa hai phương pháp đánh giá, giá trị \textbf{K = 3} được lựa chọn làm tham số tối ưu cho mô hình. Kết quả phân cụm cuối cùng được minh họa trực quan tại Hình \ref{fig:kmeans_clusters}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figures/sec3/kmeans_clusters.png}
+    \caption{\centering Trực quan hóa các cụm dữ liệu sau khi áp dụng K-Means}
+    \label{fig:kmeans_clusters}
+\end{figure}
+
+\item \textbf{Giai đoạn 2: Dự báo cục bộ.} Với mỗi cụm được hình thành, một mô hình KNN riêng biệt được xây dựng và huấn luyện. Cách tiếp cận này cho phép mô hình thích nghi tốt hơn với quy luật giá nhà tại từng phân khúc thị trường đặc thù (ví dụ: khu vực trung tâm sầm uất so với khu vực ngoại ô).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm]
+
+        % 1. Nút Bắt đầu (Input)
+        \node (start) [startstop] {Dữ liệu đầu vào ($X$)};
+
+        % 2. Nút K-Means
+        \node (kmeans) [process, below of=start] {Phân cụm K-Means ($K=3$)};
+
+        % 3. Các Cụm (Clusters) - Tách nhánh
+        \node (c2) [cluster, below of=kmeans, yshift=-0.5cm] {Cụm 2};
+        \node (c1) [cluster, left of=c2, xshift=-2.5cm] {Cụm 1};
+        \node (c3) [cluster, right of=c2, xshift=2.5cm] {Cụm 3};
+
+        % 4. Các Mô hình KNN riêng biệt
+        \node (knn2) [process, below of=c2] {KNN Model 2};
+        \node (knn1) [process, below of=c1] {KNN Model 1};
+        \node (knn3) [process, below of=c3] {KNN Model 3};
+
+        % 5. Nút Kết thúc (Output)
+        \node (stop) [startstop, below of=knn2, yshift=-0.5cm] {Kết quả dự báo ($Y$)};
+
+        % --- VẼ CÁC MŨI TÊN LIÊN KẾT ---
+        
+        % Từ Input -> Kmeans
+        \draw [arrow] (start) -- (kmeans);
+
+        % Từ Kmeans -> Các cụm
+        \draw [arrow] (kmeans) -| (c1);
+        \draw [arrow] (kmeans) -- (c2);
+        \draw [arrow] (kmeans) -| (c3);
+
+        % Từ Các cụm -> Các model KNN
+        \draw [arrow] (c1) -- (knn1);
+        \draw [arrow] (c2) -- (knn2);
+        \draw [arrow] (c3) -- (knn3);
+
+        % Từ Các model KNN -> Kết quả (Gom lại)
+        \draw [arrow] (knn1) |- (stop);
+        \draw [arrow] (knn2) -- (stop);
+        \draw [arrow] (knn3) |- (stop);
+
+    \end{tikzpicture}
+    \caption{\centering Sơ đồ quy trình hoạt động của mô hình lai K-Means + KNN}
+    \label{fig:hybrid_flowchart}
+\end{figure}
+
+\subsection{Kết quả và đánh giá chung}
+
+\subsubsection{Kết quả thực nghiệm định lượng}
+Sau khi hoàn tất quá trình huấn luyện và tối ưu tham số, hiệu suất của các mô hình được đánh giá trên tập kiểm tra độc lập (test set). Các chỉ số đo lường được tổng hợp trong Bảng \ref{tab:performance_comparison}.
+
+\begin{table}[hbt!]
+    \caption{\centering So sánh các chỉ số hiệu suất của hai phương pháp}
+    \label{tab:performance_comparison}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}p{0.35\textwidth} c c}
+    \toprule
+    \textbf{Chỉ số đánh giá} & \textbf{KNN Regressor} & \textbf{K-Means + KNN} \\ 
+    \midrule
+    R2 Score (càng cao càng tốt) & 0.7902 & \textbf{0.7957} \\
+    MAE (càng thấp càng tốt) & 4.2213 & \textbf{4.2193} \\
+    RMSE (càng thấp càng tốt) & 5.6574 & \textbf{5.5819} \\
+    MAPE (càng thấp càng tốt) & \textbf{0.1328} & 0.1358 \\ 
+    \bottomrule
+    \end{tabular*}
+\end{table}
+\FloatBarrier
+
+\subsubsection{Phân tích kết quả}
+Dựa trên số liệu thực nghiệm, một số phân tích và đánh giá được đưa ra như sau:
+
+\begin{itemize}
+    \item \textbf{Về độ chính xác tổng thể:} Cả hai phương pháp đều thể hiện khả năng dự báo khả quan với hệ số xác định $R^2$ đạt xấp xỉ 0.8. Điều này chứng minh rằng quy trình tiền xử lý dữ liệu (đặc biệt là biến đổi logarit và loại bỏ ngoại lai) đã giúp cải thiện đáng kể chất lượng dữ liệu đầu vào.
+    \item \textbf{So sánh hiệu quả giữa hai phương pháp:} Mô hình lai \textbf{K-Means + KNN} cho thấy ưu thế vượt trội hơn ở hầu hết các chỉ số quan trọng. Cụ thể, $R^2$ tăng lên mức 0.7957 và RMSE giảm xuống còn 5.5819 so với mô hình KNN đơn lẻ. Việc chỉ số RMSE giảm phản ánh rằng phương pháp lai ít gặp phải các sai số dự báo lớn, nhờ vào khả năng phân tách và xử lý dữ liệu theo từng đặc thù nhóm riêng biệt.
+    \item \textbf{Về tính ổn định:} Mặc dù mô hình lai có độ chính xác cao hơn, mô hình KNN thuần túy vẫn duy trì ưu thế về chỉ số MAPE thấp nhất (0.1328). Điều này cho thấy trong một số trường hợp, sự đơn giản của mô hình toàn cục vẫn mang lại độ ổn định tương đối tốt trên toàn bộ tập dữ liệu.
+\end{itemize}
+
+Tóm lại, trong phạm vi thực nghiệm của nghiên cứu này, phương pháp kết hợp \textbf{K-Means + KNN} đã chứng minh được tính hiệu quả cao hơn trong việc giải quyết bài toán dự đoán giá nhà đất phức tạp.

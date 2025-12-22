@@ -1,0 +1,104 @@
+\section{Giới thiệu}
+
+\subsection{Tổng quan}
+
+Giá bất động sản là một trong những yếu tố kinh tế quan trọng, chịu ảnh hưởng bởi nhiều đặc trưng khác nhau như vị trí địa lý, cơ sở hạ tầng, tiện ích xung quanh và các đặc điểm của công trình. Việc dự đoán chính xác giá nhà đất không chỉ có ý nghĩa đối với người mua và người bán mà còn đóng vai trò quan trọng trong công tác quản lý, quy hoạch đô thị và hỗ trợ ra quyết định đầu tư.\cite{malpezzi2003hedonic}
+
+Trong những năm gần đây, cùng với sự phát triển mạnh mẽ của khoa học dữ liệu và học máy (machine learning), nhiều phương pháp dự đoán dựa trên dữ liệu đã được đề xuất và áp dụng nhằm mô hình hóa mối quan hệ phức tạp giữa các đặc trưng đầu vào và giá nhà\cite{harrison1978hedonic}. Có thể kể đến các phương pháp thống kê và tuyến tính như \textit{Linear Regression}, \textit{Elastic Net}, các thuật toán cây như \textit{Decision Tree Regression}, \textit{Random Forest} là các phương pháp được khai thác rộng rãi trong nhiều nghiên cứu về dự đoán giá nhà. Đặc biệt, việc sử dụng các mô hình lai \textit{(hybrid models)} kết hợp phương pháp học không tham số như \textit{K-Nearest Neighbors} (KNN)\cite{cover1967nearest} và các kỹ thuật phân cụm như \textit{K-means} được đánh giá cao nhờ tính trực quan, dễ triển khai và khả năng thích ứng tốt với các cấu trúc dữ liệu phi tuyến, không đồng nhất.
+
+Tuy nhiên, hiệu quả của các phương pháp này phụ thuộc lớn vào quy trình tiền xử lý dữ liệu, chuẩn hóa đặc trưng và lựa chọn siêu tham số, đặc biệt là số lượng láng giềng trong KNN và số cụm trong K-means. Bên cạnh đó, việc đánh giá mô hình không đúng cách có thể dẫn đến hiện tượng rò rỉ dữ liệu (data leakage)\cite{kaufman2012leakage}, làm sai lệch kết quả và giảm độ tin cậy của mô hình.
+
+\subsection{Mục tiêu và các đóng góp chính}
+
+Mục tiêu chính của báo cáo này là xây dựng và đánh giá một mô hình dự đoán giá nhà đất dựa trên dữ liệu thực tế bằng cách kết hợp phương pháp hồi quy KNN với kỹ thuật phân cụm K-means. Cách tiếp cận này nhằm khai thác cấu trúc cục bộ của dữ liệu để nâng cao độ chính xác dự đoán so với việc sử dụng mô hình KNN đơn lẻ.
+
+
+Các đóng góp chính của bài báo cáo bao gồm:
+\begin{itemize}
+    \item Thực hiện phân tích khám phá dữ liệu và tiền xử lý dữ liệu bất động sản, bao gồm biến đổi logarit đối với các biến có phân phối lệch và loại bỏ ngoại lai sau biến đổi nhằm giảm ảnh hưởng của các giá trị cực đoan.
+    \item Xây dựng mô hình hồi quy KNN cho bài toán dự đoán giá nhà và phân tích ảnh hưởng của tham số số láng giềng đến hiệu năng mô hình.
+    \item Đề xuất mô hình kết hợp \textit{K-means + KNN}, trong đó dữ liệu được phân cụm trước bằng K-means, sau đó huấn luyện một mô hình KNN riêng với tham số tối ưu cho từng cụm.
+    \item Sử dụng các thước đo đánh giá phù hợp cho bài toán hồi quy, bao gồm MAE, RMSE, MAPE và hệ số xác định $R^2$\cite{hastie2009elements}. Đối với bài toán phân cụm, Inertia được sử dụng như một chỉ báo hỗ trợ nhằm phân tích xu hướng khi thay đổi số cụm thông qua phương pháp elbow, trong khi Silhouette Score\cite{rousseeuw1987silhouettes} được áp dụng để đánh giá chất lượng phân cụm và lựa chọn số cụm tối ưu.
+    \item Xây dựng quy trình huấn luyện, xác thực và kiểm tra chặt chẽ nhằm đảm bảo tính khách quan và tránh rò rỉ dữ liệu trong quá trình lựa chọn siêu tham số.
+\end{itemize}
+
+\subsection{Cấu trúc bài báo cáo}
+
+Bài báo cáo được tổ chức thành các phần như sau:
+\begin{itemize}
+
+\item \textbf{Phần~1: Giới thiệu}
+
+Phần này trình bày bối cảnh và tầm quan trọng của việc dự đoán giá nhà, đồng thời nêu ra một số phương pháp dự đoán đã được áp dụng. Ngoài ra, chương này cũng trình bày mục tiêu của dự án, phương pháp tiếp cận tổng quát cũng như những đóng góp chính của dự án.
+
+\item \textbf{Phần~2: Kiến thức nền tảng}
+
+Phần này trình bày các kiến thức nền tảng liên quan đến các phương pháp KNN, K-means và các thước đo đánh giá sai số. 
+
+\item \textbf{Phần~3: Mô hình dự đoán giá nhà đất}
+
+Phần này là phần trọng tâm của bài báo cáo, mô tả chi tiết mô hình dự đoán giá nhà đất, phương pháp thực hiện, quy trình thực nghiệm và kết quả đạt được. 
+
+\item \textbf{Phần~4: Thảo luận}
+
+Phần này thảo luận về ý nghĩa thực tiễn và các hạn chế còn tồn tại của mô hình.
+
+\item \textbf{Phần~5: Đề xuất mô hình dự đoán khác (Linear Regression)}
+
+Phần này đề xuất việc sử dụng mô hình \textit{Linear Regression} để dự đoán giá nhà, từ đó đưa ra nhận xét về hiệu quả dự đoán, và so sánh với mô hình lai K-means + KNN.
+
+
+\item \textbf{Phần~6: Kết luận}
+
+Phần này tổng kết các kết quả chính và đưa ra kết luận chung của dự án.
+\end{itemize}
+
+
+\subsection{Phân công nhiệm vụ}
+
+Nhiệm vụ của các thành viên trong nhóm chúng em phân công theo kế hoạch như sau
+
+\newpage
+
+\begin{sidewaystable}
+\caption{\centering{Bảng phân công nhiệm vụ của các thành viên trong nhóm theo từng tuần}}
+\label{tab:task_assignment}
+
+\begin{tabular*}{\textheight}{@{\extracolsep\fill}cllp{10cm}}
+\toprule
+\textbf{Tuần} & \textbf{MSSV} & \textbf{Họ tên} & \textbf{Công việc đã thực hiện} \\
+\midrule
+\multirow{5}{*}{\parbox{2.8cm}{\centering Tuần 1\\(18/11--25/11)}}
+& 25120377 & Nguyễn Hoàng Long        & Import dữ liệu, xuất file cho tập train và test \\
+& 25120480 & Nguyễn Phùng Nhật Khanh  & Phân tích dữ liệu ban đầu \\
+& 25120263 & Trịnh Tuấn Kiệt          & Loại bỏ các giá trị ngoại lai (outliers) \\
+& 25120477 & Ngô Gia Bảo              & Chuẩn hóa dữ liệu \\
+& 25120483 & Phan Ngọc Thành Minh     & Chia dữ liệu thành hai tập train và test \\
+\midrule
+\multirow{5}{*}{\parbox{2.8cm}{\centering Tuần 2\\(02/12--09/12)}}
+& 25120377 & Nguyễn Hoàng Long        & Tính giá trị trung bình, xây dựng hàm tính $R^2$ \\
+& 25120480 & Nguyễn Phùng Nhật Khanh  & Tính khoảng cách trên tập huấn luyện \\
+& 25120263 & Trịnh Tuấn Kiệt          & So sánh kết quả, kiểm tra độ chính xác trên tập test \\
+& 25120477 & Ngô Gia Bảo              & Lựa chọn giá trị $k$ tối ưu \\
+& 25120483 & Phan Ngọc Thành Minh     & Vẽ biểu đồ và hình ảnh minh họa \\
+\midrule
+\multirow{5}{*}{\parbox{2.8cm}{\centering Tuần 3\\(9/12--16/12)}}
+& 25120377 & Nguyễn Hoàng Long        & Xây dựng hàm phân cụm (KMeans) \\
+& 25120480 & Nguyễn Phùng Nhật Khanh  & Tính toán lại trên tập test, đánh giá độ chính xác \\
+& 25120263 & Trịnh Tuấn Kiệt          & Xác định số cụm tối ưu \\
+& 25120477 & Ngô Gia Bảo              & Vẽ biểu đồ và hình ảnh minh họa \\
+& 25120483 & Phan Ngọc Thành Minh     & Tìm giá trị $k$ tối ưu cho từng tập dữ liệu \\
+
+\midrule
+\multirow{5}{*}{\parbox{2.8cm}{\centering Tuần 4\\(16/12--23/12)}}
+& 25120377 & Nguyễn Hoàng Long        & Viết báo cáo (Phần phương pháp nghiên cứu) \\
+& 25120480 & Nguyễn Phùng Nhật Khanh  & Viết báo cáo (Phần giới thiệu và kết luận) \\
+& 25120263 & Trịnh Tuấn Kiệt          & Viết báo cáo (Các mô hình khác và thảo luận) \\
+& 25120477 & Ngô Gia Bảo              & Viết báo cáo (Phần kiến thức nền tảng) \\
+& 25120483 & Phan Ngọc Thành Minh     & Viết báo cáo (Phần thực nghiệm, kết quả và đánh giá) \\
+\bottomrule
+\end{tabular*}
+
+\footnotetext{Bảng trình bày quá trình phân công và thực hiện nhiệm vụ của các thành viên trong nhóm suốt thời gian thực hiện đồ án.}
+\end{sidewaystable}
+\FloatBarrier

@@ -1,0 +1,24 @@
+\section{Thảo luận}
+\subsection{Tác động}
+\quad Việc triển khai các mô hình dự báo giá bất động sản trong bài làm này không chỉ dừng lại ở bài toán hồi quy đơn thuần mà còn mở ra cái nhìn sâu sắc về cấu trúc dữ liệu thị trường.
+\begin{itemize}
+    \item \textbf{Về mặt kỹ thuật:} Bài làm cho thấy việc ứng dụng các mô hình cơ bản như \textbf{K-Nearest Neighbors (KNN)} có thể tạo ra nền tảng dự báo ổn định nhờ tận dụng tính tương đồng về đặc điểm địa lý và thuộc tính nhà ở.
+
+    \item \textbf{Về cải tiến:} Việc ứng dụng thêm \textbf{K-Means} vào mô hình \textbf{KNN} cho ta một kết quả tốt hơn, thấy được tác động tích cực của việc phân cụm dữ liệu trước tính toán. Việc dùng K-Means để phân các "clusters" trong đó các dữ liệu có tính tương đồng với nhau, sau đó sử dụng mô hình KNN để tiến hành dự đoán trên khoảng không gian tập trung hơn, điều này giúp giảm thiểu việc nhiễu, phản ánh chính xác hơn các biến động cục bộ của thị trường.
+
+    \item \textbf{Ứng dụng:} Mô hình cung cấp công cụ hỗ trợ đưa ra một cái nhìn khách quan cho các nhà đầu tư và người mua nhà. Việc ứng dụng trên tập dữ liệu trước đó để đưa ra dự đoán cho người dùng một cách có căn cứ hơn, dựa vào đây người dùng có thể có được cái nhìn khái quát về biến động của thị trường và xây dựng được chiến lược cụ thể.
+\end{itemize}
+
+\vspace{2mm}
+
+\subsection{Hạn chế}
+
+Mặc dù việc kết hợp 2 mô hình \textbf{KNN} và \textbf{K-Means} mang lại kết quả khả quan, hệ thống vẫn tồn tại những rào cản kỹ thuật cần được khắc phục trong tương lai:
+
+\begin{itemize}
+    \item \textbf{Độ chính xác:} Do thị trường bất động sản chịu ảnh hưởng mạnh mẽ bởi các yếu tố phi cấu trúc (chính sách kinh tế, tâm lý đám đông, quy hoạch đô thị), các mô hình dựa thuần túy trên dữ liệu lịch sử như KNN vẫn chưa thể đạt được độ chính xác tuyệt đối trong các giai đoạn thị trường biến động mạnh.
+
+    \item \textbf{Tính ổn định:}  Cả hai phương pháp đều phụ thuộc lớn vào việc lựa chọn tham số $K$ (số láng giềng) và số lượng cụm trong K-Means. Việc chọn sai tham số có thể dẫn đến hiện tượng quá khớp (overfitting) hoặc dưới khớp (underfitting).
+
+    \item \textbf{Dữ liệu đầu vào:} Mô hình hiện tại chủ yếu tập trung vào các biến định lượng. Việc thiếu vắng các dữ liệu định tính (như uy tín chủ đầu tư, phong thủy, hoặc tiện ích hạ tầng ngầm) phần nào hạn chế khả năng tiệm cận giá trị thực của mô hình.
+\end{itemize}

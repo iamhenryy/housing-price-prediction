@@ -1,0 +1,252 @@
+%Version 3.1 December 2024
+% See section 11 of the User Manual for version history
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                 %%
+%% Please do not use \input{...} to include other tex files.       %%
+%% Submit your LaTeX manuscript as one .tex document.              %%
+%%                                                                 %%
+%% All additional figures and files should be attached             %%
+%% separately and not embedded in the \TeX\ document itself.       %%
+%%                                                                 %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%\documentclass[referee,sn-basic]{sn-jnl}% referee option is meant for double line spacing
+
+%%=======================================================%%
+%% to print line numbers in the margin use lineno option %%
+%%=======================================================%%
+
+%%\documentclass[lineno,pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%=========================================================================================%%
+%% the documentclass is set to pdflatex as default. You can delete it if not appropriate.  %%
+%%=========================================================================================%%
+
+%%\documentclass[sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+
+%%Note: the following reference styles support Namedate and Numbered referencing. By default the style follows the most common style. To switch between the options you can add or remove Numbered in the optional parenthesis. 
+%%The option is available for: sn-basic.bst, sn-chicago.bst%  
+ 
+%%\documentclass[pdflatex,sn-nature]{sn-jnl}% Style for submissions to Nature Portfolio journals
+%%\documentclass[pdflatex,sn-basic]{sn-jnl}% Basic Springer Nature Reference Style/Chemistry Reference Style
+\documentclass[pdflatex,sn-mathphys-num]{sn-jnl}% Math and Physical Sciences Numbered Reference Style
+%%\documentclass[pdflatex,sn-mathphys-ay]{sn-jnl}% Math and Physical Sciences Author Year Reference Style
+%%\documentclass[pdflatex,sn-aps]{sn-jnl}% American Physical Society (APS) Reference Style
+%%\documentclass[pdflatex,sn-vancouver-num]{sn-jnl}% Vancouver Numbered Reference Style
+%%\documentclass[pdflatex,sn-vancouver-ay]{sn-jnl}% Vancouver Author Year Reference Style
+%%\documentclass[pdflatex,sn-apa]{sn-jnl}% APA Reference Style
+%%\documentclass[pdflatex,sn-chicago]{sn-jnl}% Chicago-based Humanities Reference Style
+
+%%%% Standard Packages
+%%<additional latex packages if required can be included here>
+
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+\usepackage[utf8]{vietnam}%
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{textcomp}
+\usepackage{tikz}
+\usepackage{placeins}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+
+%%%%
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\definecolor{codegreen}{rgb}{1, 1, 1}
+\definecolor{codegray}{rgb}{.2, .2, .2}
+\definecolor{codepurple}{rgb}{0, 0, 0}
+\definecolor{codekey}{rgb}{0, 0, 0}
+\definecolor{backcolour}{rgb}{1, 1, 1}
+
+\lstdefinestyle{mystyle}{
+  % backgroundcolor=\color{backcolour},  
+  commentstyle=\color{codegray} \itshape,
+  keywordstyle=\color{codekey} \bfseries,
+  numberstyle=\tiny\color{codekey},
+  stringstyle=\color{codepurple},
+  basicstyle=\ttfamily\footnotesize\color{codekey},
+  % basewidth  = {.5em,0.5em},
+  % basicstyle=\ttfamily,
+  breakatwhitespace=false,         
+  breaklines=true,                 
+  captionpos=b,                    
+  keepspaces=true,                 
+  numbers=none,                    
+  numbersep=5pt,                  
+  showspaces=false,                
+  showstringspaces=false,
+  showtabs=false,                  
+  tabsize=4, 
+  frame = single,
+  framesep = 7pt,
+  % columns = flexible, 
+  % keepspaces = false
+}
+
+%"mystyle" code listing set
+\lstset{style=mystyle}
+
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=2.5cm, minimum height=1cm,text centered, draw=black, fill=red!10]
+\tikzstyle{process} = [rectangle, minimum width=2.5cm, minimum height=1cm, text centered, draw=black, fill=orange!10]
+\tikzstyle{decision} = [diamond, minimum width=2.5cm, minimum height=1cm, text centered, draw=black, fill=green!10]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{cluster} = [rectangle, rounded corners, minimum width=2cm, minimum height=1cm, text centered, draw=black, fill=blue!10]
+
+%%%%%=============================================================================%%%%
+%%%%  Remarks: This template is provided to aid authors with the preparation
+%%%%  of original research articles intended for submission to journals published 
+%%%%  by Springer Nature. The guidance has been prepared in partnership with 
+%%%%  production teams to conform to Springer Nature technical requirements. 
+%%%%  Editorial and presentation requirements differ among journal portfolios and 
+%%%%  research disciplines. You may find sections in this template are irrelevant 
+%%%%  to your work and are empowered to omit any such section if allowed by the 
+%%%%  journal you intend to submit to. The submission guidelines and policies 
+%%%%  of the journal take precedence. A detailed User Manual is available in the 
+%%%%  template package for technical guidance.
+%%%%%=============================================================================%%%%
+
+%% as per the requirement new theorem styles can be included as shown below
+\theoremstyle{thmstyleone}%
+\newtheorem{theorem}{Theorem}%  meant for continuous numbers
+%%\newtheorem{theorem}{Theorem}[section]% meant for sectionwise numbers
+%% optional argument [theorem] produces theorem numbering sequence instead of independent numbers for Proposition
+\newtheorem{proposition}[theorem]{Proposition}% 
+%%\newtheorem{proposition}{Proposition}% to get separate numbers for theorem and proposition etc.
+
+\theoremstyle{thmstyletwo}%
+\newtheorem{example}{Example}%
+\newtheorem{remark}{Remark}%
+
+\theoremstyle{thmstylethree}%
+\newtheorem{definition}{Definition}%
+
+\raggedbottom
+%%\unnumbered% uncomment this for unnumbered level heads
+
+\begin{document}
+
+\title[Article Title]{Xây dựng mô hình dự đoán giá nhà đất}
+
+%%=============================================================%%
+%% GivenName	-> \fnm{Joergen W.}
+%% Particle	-> \spfx{van der} -> surname prefix
+%% FamilyName	-> \sur{Ploeg}
+%% Suffix	-> \sfx{IV}
+%% \author*[1,2]{\fnm{Joergen W.} \spfx{van der} \sur{Ploeg} 
+%%  \sfx{IV}}\email{iauthor@gmail.com}
+%%=============================================================%%
+
+%% =================== Authors ===================
+
+\author*[1]{\fnm{Tuấn Kiệt} \sur{Trịnh}}\email{2512026335@student.hcmus.edu.vn}
+
+\author[1]{\fnm{Gia Bảo} \sur{Ngô}}\email{2512047728@student.hcmus.edu.vn}
+
+\author[1]{\fnm{Ngọc Thành Minh} \sur{Phan}}\email{2512048368@student.hcmus.edu.vn}
+
+\author[1]{\fnm{Phùng Nhật Khanh} \sur{Nguyễn}}\email{2512048079@student.hcmus.edu.vn}
+
+\author[1]{\fnm{Hoàng Long} \sur{Nguyễn}}\email{2512037752@student.hcmus.edu.vn}
+
+
+\equalcont{Các tác giả đóng góp công sức vào bài làm là như nhau.}
+
+%% =================== Affiliation ===================
+
+\affil[1]{%
+  \orgdiv{Khoa Công nghệ thông tin},
+  \orgname{Trường Đại học Khoa học tự nhiên, ĐHQG-HCM},
+  \orgaddress{
+    \city{Thành phố Hồ Chí Minh},
+    \country{Việt Nam}
+  }
+}
+
+
+%%==================================%%
+%% Sample for unstructured abstract %%
+%%==================================%%
+
+\abstract{Dự án này nhằm mục tiêu xây dựng mô hình dự đoán giá nhà dựa trên các yếu tố ảnh hưởng đến giá trị bất động sản, bao gồm tuổi nhà, khoảng cách đến trạm MRT, số lượng cửa hàng tiện lợi lân cận và tọa độ địa lý. Việc dự đoán chính xác giá nhà giúp người mua, người bán và các nhà phân tích bất động sản đưa ra quyết định hợp lý, đồng thời hỗ trợ nghiên cứu thị trường và định giá tài sản.
+
+Trong nghiên cứu này, hai phương pháp chính được áp dụng: \textit{K-Nearest Neighbors Regression} (KNN) và \textit{K-Means clustering} kết hợp với KNN. KNN dựa trên nguyên lý khoảng cách để dự đoán giá trị dựa trên những ngôi nhà tương tự, trong khi phương pháp kết hợp với K-Means giúp phân nhóm dữ liệu thành các cụm có đặc điểm tương đồng, từ đó cải thiện khả năng dự đoán của KNN bằng cách học riêng biệt trong từng cụm.
+
+Dữ liệu được tiền xử lý kỹ lưỡng, bao gồm việc loại bỏ các thuộc tính không cần thiết, biến đổi log để giảm thiểu phân bố lệch, loại bỏ ngoại lai và chuẩn hóa dữ liệu. Các thí nghiệm đánh giá hiệu quả mô hình dựa trên các chỉ số như $R^2$, MAE, RMSE và MAPE. Kết quả thực nghiệm cho thấy mô hình kết hợp K-Means và KNN cho dự đoán ổn định hơn so với KNN thông thường, nhờ khả năng nắm bắt các đặc điểm riêng của từng nhóm nhà khác nhau.
+
+Kết quả này góp phần cung cấp một hướng tiếp cận hiệu quả để phân tích và dự đoán giá nhà, đồng thời mở ra cơ hội ứng dụng trong các hệ thống tư vấn bất động sản thông minh.}
+
+%%================================%%
+%% Sample for structured abstract %%
+%%================================%%
+
+% \abstract{\textbf{Purpose:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.
+% 
+% \textbf{Methods:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.
+% 
+% \textbf{Results:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.
+% 
+% \textbf{Conclusion:} The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. The abstract must not include subheadings (unless expressly permitted in the journal's Instructions to Authors), equations or citations. As a guide the abstract should not exceed 200 words. Most journals do not set a hard limit however authors are advised to check the author instructions for the journal they are submitting to.}
+
+\keywords{House price prediction, KNN, K-means, Regression}
+
+%%\pacs[JEL Classification]{D8, H51}
+
+%%\pacs[MSC Classification]{35A01, 65L10, 65L12, 65L20, 65L70}
+
+\maketitle
+
+% Section 1
+\input{contents/sec1}
+
+% Section 2
+\input{contents/sec2}
+
+% Section 3
+\input{contents/sec3/sec3.1}
+% \input{contents/sec3/sec3.2-3}
+% \input{contents/sec3/sec3.2-3.3}
+\input{contents/sec3/sec3.2+3.3}
+
+% Section 4
+\input{contents/sec5}
+
+% Section 5
+\input{contents/sec4}
+
+% Section 6
+\input{contents/sec6}
+
+
+%%===========================================================================================%%
+%% If you are submitting to one of the Nature Portfolio journals, using the eJP submission   %%
+%% system, please include the references within the manuscript file itself. You may do this  %%
+%% by copying the reference list from your .bbl file, paste it into the main manuscript .tex %%
+%% file, and delete the associated \verb+\bibliography+ commands.                            %%
+%%===========================================================================================%%
+\newpage
+\bibliography{sn-bibliography}% common bib file
+%% if required, the content of .bbl file can be included here once bbl is generated
+%%\input sn-article.bbl
+
+\end{document}

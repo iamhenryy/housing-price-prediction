@@ -1,0 +1,10 @@
+\section{Kết luận}
+
+Trong báo cáo này, chúng tôi đã xây dựng và đánh giá các mô hình dự đoán giá nhà đất dựa trên dữ liệu bất động sản thực tế, với trọng tâm là các phương pháp học máy không tham số, cụ thể là KNN và mô hình lai K-means + KNN. Thông qua quá trình tiền xử lý dữ liệu, bao gồm biến đổi logarit, loại bỏ ngoại lai và chuẩn hóa đặc trưng, dữ liệu đầu vào được cải thiện đáng kể về mặt phân phối và độ ổn định, tạo điều kiện thuận lợi cho quá trình học của mô hình.
+
+
+Kết quả thực nghiệm cho thấy mô hình KNN đạt hiệu quả dự đoán tốt với các thước đo đánh giá hồi quy như MAE, RMSE, MAPE và hệ số xác định $R^2$. Đặc biệt, mô hình lai K-means + KNN, trong đó dữ liệu được phân cụm trước khi áp dụng KNN cho từng cụm, đạt được sự cải thiện nhẹ nhưng nhất quán hơn so với việc áp dụng KNN thuần tuý trên toàn bộ dữ liệu. Mặc dù mức cải thiện không lớn, kết quả này cho thấy việc phân cụm dữ liệu trước khi áp dụng KNN có thể giúp khai thác tốt hơn cấu trúc cục bộ của dữ liệu.
+
+Ngoài ra, trong phần khảo sát các phương pháp khác, mô hình Linear Regression cũng được triển khai để so sánh. Tuy nhiên, kết quả thực nghiệm cho thấy các chỉ số đánh giá của mô hình tuyến tính này kém hơn đáng kể so với mô hình K-means + KNN, gợi ý rằng mối quan hệ giữa các đặc trưng và giá nhà trong bộ dữ liệu không mang tính tuyến tính toàn cục. Ngược lại, KNN và mô hình K-means kết hợp KNN, vốn không giả định trước dạng hàm, có khả năng nắm bắt tốt hơn các cấu trúc cục bộ của dữ liệu, qua đó cho kết quả dự đoán chính xác hơn.
+
+Tóm lại, dự án đã chứng minh hiệu quả của mô hình lai K-means + KNN trong bài toán dự đoán giá nhà đất, đồng thời nhấn mạnh tầm quan trọng của việc lựa chọn mô hình phù hợp với bản chất của dữ liệu. Những kết quả đạt được không chỉ có ý nghĩa về mặt học thuật mà còn có tiềm năng ứng dụng trong các hệ thống hỗ trợ định giá bất động sản trong thực tế.

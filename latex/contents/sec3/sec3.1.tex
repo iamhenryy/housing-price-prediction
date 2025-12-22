@@ -1,0 +1,39 @@
+\section{Mô hình dự đoán giá nhà đất}
+\subsection{Phương pháp}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\linewidth]{figures/sec3/Flowchart.png}
+    \caption{\centering{Sơ đồ tổng quát kiến trúc mô hình}}
+    \label{fig:flowchart}
+\end{figure}
+
+Hình~\ref{fig:flowchart} minh họa quy trình công tác (pipeline) vận hành của kiến trúc mô hình dự đoán giá nhà đất, bao gồm: tìm trung tâm và phân cụm các mẫu dữ liệu nhà đất trong tập huấn luyện, thực hiện vòng lặp trên tập xác thực để tìm số cụm tối ưu, đồng thời tìm số K-nearest neighbor tối ưu cho mỗi cụm, thông qua các phương pháp đánh giá như $\mathbf{R^2, MAPE, RMSE, MAE,  Silhouette}$, sử dụng giá trị \textit{K} tìm được ở bước cuối làm tham số cho mô hình dự đoán giá nhà đất hoàn chỉnh và đánh giá mô hình máy học hoàn chỉnh trên tập kiểm tra.
+
+\subsubsection{K-means}
+\textbf{K-means} là một phương pháp \textit{học máy không giám sát}, được sử dụng trong nghiên cứu này nhằm hỗ trợ và nâng cao hiệu quả của mô hình KNN, đồng thời giảm ảnh hưởng của các điểm dữ liệu ngoại lệ trong quá trình tìm kiếm láng giềng. Thuật toán hoạt động bằng cách nhóm và chia các mẫu dữ liệu nhà đất gần nhau thành một số hữu hạn các cụm, và chỉ thực hiện thuật toán KNN để dự đoán một mẫu dữ liệu dựa trên những mẫu dữ liệu thuộc cùng cụm với nó.
+
+Quá trình phân cụm được thực hiện bằng cách khởi tạo \textit{K} tâm cụm ban đầu, sau đó tiến hành các vòng lặp cập nhật để các tâm cụm dần hội tụ về một cấu trúc phân cụm ổn định, qua đó hỗ trợ hiệu quả cho các bước phân tích và mô hình hóa dữ liệu giá nhà đất tiếp theo.
+
+\subsubsection{KNN}
+\textbf{Thuật toán KNN} là một phương pháp học máy thuộc nhóm \textit{lazy learning}, được biết đến rộng rãi nhờ cơ chế suy luận đơn giản và thời gian huấn luyện gần như bằng 0.
+
+Phương pháp này hoạt động bằng cách lựa chọn \textit{K} láng giềng gần nhất trong tập huấn luyện đối với điểm cần dự đoán, sau đó tổng hợp nhãn của điểm đó dựa trên các mẫu lân cận. Trong nghiên cứu này, bài toán được xét dưới dạng hồi quy, theo đó thuật toán KNN được triển khai ở chế độ hồi quy, với giá trị đầu ra được ước lượng thông qua trung bình cộng giá nhà đất của các mẫu lân cận.
+
+Tuy nhiên, KNN cũng tồn tại một số hạn chế. Mặc dù chi phí huấn luyện không đáng kể, thời gian suy luận lại tăng lên đáng kể khi kích thước tập dữ liệu hoặc số \textit{K} lớn. Ngoài ra, khi \textit{K} nhỏ, mô hình trở nên nhạy cảm với nhiễu, dễ dẫn đến các dự đoán sai lệch.
+
+Do đó, mô hình đề xuất trong nghiên cứu này kết hợp K-means và KNN nhằm phân nhóm dữ liệu giá nhà đất trước, sau đó chỉ thực hiện dự đoán KNN trong phạm vi từng cụm, qua đó hạn chế ảnh hưởng của nhiễu và cải thiện hiệu quả dự báo.
+
+\subsubsection{Phương pháp tìm tham số \textit{K} cho số cụm}
+Trong bài toán phân cụm, việc lựa chọn số cụm \textit{K} có ý nghĩa quan trọng đến tính chính xác của những suy luận của mô hình. Đặc biệt với những tập dữ liệu phức tạp và có kích thước không xác định, việc chọn một số cụm \textit{K} cố định có thể dẫn đến sự thiếu cơ sở trong nhiều trường hợp. Vì vậy, nghiên cứu nên có phương pháp rõ ràng và khoa học để có thể tìm được cách chia cụm cho ra kết quả với nền tảng rõ ràng. 
+
+Để giải quyết vấn đề này, nhóm chúng tôi đề xuất một phương pháp tìm số cụm \textit{K}, nhằm mục đích phản ánh hợp lý mẫu dữ liệu nhà đất trên phương diện suy luận và dự đoán. Thay vì giả định một số \textit{K} từ trước, phương pháp tìm cụm của chúng tôi sẽ trực tiếp tính kết quả giá nhà đất đối với các giá trị \textit{K} khác nhau trong một khoảng cho sẵn, từ đó tìm được lựa chọn phản ánh mức độ phân cụm thỏa mãn các tiêu chí đánh giá nhất quán.
+
+Về cơ bản, phương pháp tìm cấu hình phù hợp có ưu điểm là sẽ thể hiện được các cấu trúc tiềm ẩn của dữ liệu nhà đất, đồng thời làm giảm tính chủ quan trong việc chọn giá trị của \textit{K}. Nhưng mặt khác, cách tiếp cận này còn phụ thuộc nhiều vào tiêu chí đánh giá, dẫn đến sự không nhất quán về kết quả nếu dựa trên các tiêu chí khác nhau. Bên cạnh đó, việc thử với nhiều giá trị \textit{K} khác nhau sẽ làm tăng thời gian tính toán lên nhiều lần, đặc biệt là với các tập dữ liệu kích thước lớn.
+
+\subsubsection{Phương pháp tìm tham số \textit{K} láng giềng của từng cụm}
+Sau khi dữ liệu nhà đất được phân chia thành các cụm riêng biệt, mỗi cụm được xem như một không gian con có đặc trưng phân bố khác nhau về mật độ, độ nhiễu và quy mô mẫu. Do đó, việc sử dụng cùng một giá trị \textit{K} cho thuật toán KNN trên toàn bộ dữ liệu có thể không còn phù hợp trong bối cảnh này.
+
+Đối với mỗi cụm, thuật toán KNN được áp dụng độc lập với các giá trị \textit{K} khác nhau trong một khoảng xác định trước. Quá trình đánh giá được thực hiện nội bộ trong từng cụm, dựa trên khả năng dự đoán của mô hình đối với các mẫu thuộc chính cụm đó. Việc so sánh các giá trị \textit{K} cho phép quan sát ảnh hưởng của số láng giềng đến độ ổn định và độ chính xác của kết quả dự đoán trong từng không gian cụm cụ thể.
+
+Giá trị \textit{K} được lựa chọn cho mỗi cụm là giá trị thể hiện hiệu năng dự đoán phù hợp và ổn định nhất trong phạm vi cụm tương ứng. Cách tiếp cận này cho phép mô hình KNN thích nghi linh hoạt với đặc điểm cục bộ của từng cụm, đồng thời khai thác hiệu quả hơn thông tin xu hướng giá nhà đất đã được tạo ra từ bước phân cụm trước đó.
